@@ -23,9 +23,7 @@ california_housing_dataframe = pd.read_csv("https://download.mlcc.google.com/mle
 california_housing_dataframe = california_housing_dataframe.reindex(np.random.permutation(california_housing_dataframe.index))
 california_housing_dataframe["median_house_value"] /= 1000.0
 california_housing_dataframe
-
-print('Dataset Information:' )
-print(california_housing_dataframe.describe())
+display.display(california_housing_dataframe.describe())
 
 #input function defined to feed the linear regression with our data
 def my_input_fn(feature_inputs, targets, batch_size=1, shuffle=True, num_epochs=None):
@@ -144,23 +142,41 @@ def train_and_evaluate(learning_rate,periods,steps,batch_size, input_feature, ta
     # Output a table with calibration data.
     calibration_data = pd.DataFrame()
     calibration_data["predictions"] = pd.Series(predictions)
-    calibration_data["targets"] = pd.Series(targets_label)
+    calibration_data["targets"] = targets_data
     display.display(calibration_data.describe())
 
     print("Final RMSE (on training data): %0.2f" % root_mean_squared_error)
-    plt.show();
+    return calibration_data
 
-# Following parameters makes Gradient Descent Optimizer to diverge, because the learning_reate is too high.
-# train_and_evaluate(0.005, 10, 1000, 1, 'total_rooms', 'median_house_value')
+#Create a new sythetic feature beacause different cities probably have different population density
+california_housing_dataframe["rooms_per_person"] = (california_housing_dataframe["total_rooms"]/california_housing_dataframe["population"])
+#Adjust our input deleting outliers
+california_housing_dataframe["rooms_per_person"] = (
+    california_housing_dataframe["rooms_per_person"]).apply(lambda x: min(x, 5))
 
-# With a 0.003 learning rate, Gradient Descent Optimizer converge in the first three periods, but then diverge.
-# train_and_evaluate(0.003, 10, 1000, 1, 'total_rooms', 'median_house_value')
+calibration_data = train_and_evaluate(
+    learning_rate=0.00005, 
+    periods=10, 
+    steps=500, 
+    batch_size=5, 
+    input_feature='rooms_per_person', 
+    targets_label='median_house_value'
+)
 
-# Incrementing computations periods and descrementing learning_rate gives back a final RSME error near 160
-# train_and_evaluate(0.0006, 15, 1000, 1, 'total_rooms', 'median_house_value')
+#We plot a scattergram to represents the relation between Predictions and targets
+plt.figure(figsize=(15, 6))
+plt.subplot(1, 2, 1)
+display.display(calibration_data.describe())
+plt.ylabel('Predictions')
+plt.xlabel('Targets')
+plt.scatter(calibration_data["predictions"], calibration_data["targets"])
 
-# Incrementing steps and batch size changes almost nothing from the previous test.
-# train_and_evaluate(0.0006, 15, 90000, 500, 'total_rooms', 'median_house_value')
+#We plot an histogram of our synthetic feature in order to detect outliers and maybe adjust parameters at line 155
+plt.subplot(1, 2, 2)
+plt.ylabel('Frequency')
+plt.xlabel('Value')
+_ = california_housing_dataframe["rooms_per_person"].hist()
 
-#Let's try another input features
-#train_and_evaluate(0.0006, 15, 1000, 1, "popuation", 'median_house_value')
+plt.show()
+
+
