@@ -148,8 +148,9 @@ def train_and_evaluate(learning_rate,periods,steps,batch_size, input_feature, ta
     print("Final RMSE (on training data): %0.2f" % root_mean_squared_error)
     return calibration_data
 
-#Create a new sythetic feature beacause different cities probably have different population density
+#Create a sythetic feature beacause different cities probably have different population density
 california_housing_dataframe["rooms_per_person"] = (california_housing_dataframe["total_rooms"]/california_housing_dataframe["population"])
+
 #Adjust our input deleting outliers
 california_housing_dataframe["rooms_per_person"] = (
     california_housing_dataframe["rooms_per_person"]).apply(lambda x: min(x, 5))
