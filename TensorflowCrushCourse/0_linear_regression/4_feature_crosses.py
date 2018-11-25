@@ -1,3 +1,7 @@
+'''
+The aim of this exercise is to play with multiple feature crossing and bucketization parameters.
+'''
+
 from __future__ import print_function
 import math
 from IPython import display
@@ -285,6 +289,3 @@ _ = train_model(
 
 plt.show()
 
-'''
-THE AIM OF THIS EXERCISE IS TO PLAY WITH MULTIPLE FEATURE CROSSING AND BUCKETIZATION PARAMETERS.
-'''

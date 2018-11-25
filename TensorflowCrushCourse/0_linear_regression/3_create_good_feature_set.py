@@ -1,7 +1,10 @@
+'''
+The aim of this exercise is to show that is possible to manipulate features,
+creating minimal sets of trasformed and selected features.
+'''
+
 from __future__ import print_function
-
 import math
-
 from IPython import display
 from matplotlib import cm
 from matplotlib import gridspec
@@ -84,6 +87,15 @@ print("Validation targets summary:")
 display.display(validation_targets.describe())
 print("")
 
+
+'''
+A correlation matrix shows pairwise correlations, both for each feature compared to the target and for each feature compared to other features.
+Here, correlation is defined as the Pearson correlation coefficient. You don't have to understand the mathematical details for this exercise.
+Correlation values have the following meanings:
+-1.0: perfect negative correlation
+0.0: no correlation
+1.0: perfect positive correlation
+'''
 #Here we calculate Pearson Correlation coefficient beetween features
 correlation_dataframe = training_examples.copy()
 correlation_dataframe["target"] = training_targets["median_house_value"]
@@ -224,17 +236,6 @@ def train_model(
 
   return linear_regressor
 
-
-def select_and_transform_features(source_df):
-  LATITUDE_RANGES = zip(range(32, 44), range(33, 45))
-  selected_examples = pd.DataFrame()
-  selected_examples["median_income"] = source_df["median_income"]
-  for r in LATITUDE_RANGES:
-    selected_examples["latitude_%d_to_%d" % r] = source_df["latitude"].apply(
-      lambda l: 1.0 if l >= r[0] and l < r[1] else 0.0)
-  return selected_examples
-
-
 '''
 WE CAN CHOOSE A MINIMAL SET OF FEATURES LOOKING AT THE CORRELATION MATRIX
 
@@ -248,8 +249,17 @@ assert minimal_features, "You must select at least one feature!"
 minimal_training_examples = training_examples[minimal_features]
 minimal_validation_examples = validation_examples[minimal_features]
 
-IN ORDER TO TO EARN BETTER RESULTS WE BUCKETIZE LATITUDE 
+IN ORDER TO EARN BETTER RESULTS WE BUCKETIZE LATITUDE 
 '''
+
+def select_and_transform_features(source_df):
+  LATITUDE_RANGES = zip(range(32, 44), range(33, 45))
+  selected_examples = pd.DataFrame()
+  selected_examples["median_income"] = source_df["median_income"]
+  for r in LATITUDE_RANGES:
+    selected_examples["latitude_%d_to_%d" % r] = source_df["latitude"].apply(
+      lambda l: 1.0 if l >= r[0] and l < r[1] else 0.0)
+  return selected_examples
 
 #Bucketizing latitude 
 selected_training_examples = select_and_transform_features(training_examples)
@@ -263,9 +273,6 @@ print("Selected Validation examples summary:")
 display.display(selected_validation_examples.describe())
 print("")
 
-#
-# Don't forget to adjust these parameters.
-#
 train_model(
     learning_rate=0.01,
     periods=10,

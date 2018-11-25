@@ -1,3 +1,14 @@
+'''
+Here we perform a linear regression with two features.
+The objective among all future exercises will reduce the RSME error at least near 100,
+which represent a good result.
+In this exercise a simple solution will be observed, 
+tuning basic parameters like learning_rate, periods and steps.
+
+It will be difficult to reach good results with this code, but more efficient solutions 
+will be presented in next exercises.
+'''
+
 # Import needed libraries
 from __future__ import print_function
 import math

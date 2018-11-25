@@ -1,3 +1,10 @@
+'''
+The aim of this exercise is to work with features and data to be analysed.
+For the form element we create a synthetic feature, in this case simply a product of two existing.
+For the latter we present a simple process to analyse the presence of outliers and we 
+demonstrate how to delete them.
+'''
+
 # Import needed libraries
 from __future__ import print_function
 import math
@@ -148,6 +155,11 @@ def train_and_evaluate(learning_rate,periods,steps,batch_size, input_feature, ta
     print("Final RMSE (on training data): %0.2f" % root_mean_squared_error)
     return calibration_data
 
+'''
+Both the total_rooms and population features count totals for a given city block.
+But what if one city block were more densely populated than another? 
+We can explore how block density relates to median house value by creating a synthetic feature that's a ratio of total_rooms and population.
+'''
 #Create a sythetic feature beacause different cities probably have different population density
 california_housing_dataframe["rooms_per_person"] = (california_housing_dataframe["total_rooms"]/california_housing_dataframe["population"])
 
@@ -172,6 +184,9 @@ plt.ylabel('Predictions')
 plt.xlabel('Targets')
 plt.scatter(calibration_data["predictions"], calibration_data["targets"])
 
+'''
+Histograms of feature are a pretty good visualition to point out outliers presence.
+'''
 #We plot an histogram of our synthetic feature in order to detect outliers and maybe adjust parameters at line 155
 plt.subplot(1, 2, 2)
 plt.ylabel('Frequency')
