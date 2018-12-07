@@ -11,17 +11,22 @@ So, the learning objectives are:
  - Visualize the weights of a neural-network hidden layer
 '''
 from __future__ import print_function
+
+import glob
 import math
+import os
+import numpy as np
+import pandas as pd
+import tensorflow as tf
+import seaborn as sns
+
 from IPython import display
 from matplotlib import cm
 from matplotlib import gridspec
 from matplotlib import pyplot as plt
-import numpy as np
-import pandas as pd
 from sklearn import metrics
-import tensorflow as tf
 from tensorflow.python.data import Dataset
-import os
+
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # or any {'0', '1', '2'}
 tf.logging.set_verbosity(tf.logging.ERROR)
@@ -389,6 +394,7 @@ def train_nn_classification_model(
     training_errors.append(training_log_loss)
     validation_errors.append(validation_log_loss)
   print("Model training finished.")
+
   # Remove event files to save disk space.
   _ = map(os.remove, glob.glob(os.path.join(classifier.model_dir, 'events.out.tfevents*')))
   
@@ -423,9 +429,13 @@ def train_nn_classification_model(
 
   return classifier
 
+'''
+Train the classifier for 10, 100 and respectively 1000 steps. 
+What differences do you see visually for the different levels of convergence?
+'''
 classifier = train_nn_classification_model(
     learning_rate=0.05,
-    steps=1000,
+    steps=100,
     batch_size=30,
     hidden_units=[100, 100],
     training_examples=training_examples,
@@ -458,8 +468,9 @@ The first hidden layer will have 784×N weights where N is the number of nodes i
 We can turn those weights back into 28×28 images by reshaping each of the N 1×784 arrays of weights into N arrays of size 28×28.
 Note that this requires that a DNNClassifier called "classifier" has already been trained.
 '''
-
+print()
 print(classifier.get_variable_names())
+print()
 
 weights0 = classifier.get_variable_value("dnn/hiddenlayer_0/kernel")
 
