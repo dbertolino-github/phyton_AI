@@ -314,9 +314,9 @@ dnn_regressor , adagrad_training_losses, adagrad_validation_losses = train_nn_re
     steps=1000,
     batch_size=50,
     hidden_units=[6, 4, 2],
-    training_examples=lll_training_examples,
+    training_examples=training_examples,
     training_targets=training_targets,
-    validation_examples=lll_validation_examples,
+    validation_examples=validation_examples,
     validation_targets=validation_targets)
 
 '''
