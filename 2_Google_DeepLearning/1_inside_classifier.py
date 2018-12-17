@@ -159,7 +159,14 @@ def maybe_pickle(data_folders, min_num_images_per_class, force=False):
 train_datasets = maybe_pickle(train_folders, 45000)
 test_datasets = maybe_pickle(test_folders, 1800)
 
-#TODO SOLVE PROBLEM 2: print collected data with matplotlib
+#SOLVING PROBLEM 2: print collected data with matplotlib
+print(train_datasets)
+with open(train_datasets[0], 'rb') as f:
+        letter_set = pickle.load(f)
+plt.imshow(letter_set[0])
+plt.title("Char a")
+plt.show()
+
 
 '''
 Merge and prune the training data as needed. 
@@ -214,7 +221,10 @@ valid_size = 10000
 test_size = 10000
 
 valid_dataset, valid_labels, train_dataset, train_labels = merge_datasets(
-  train_datasets, train_size, valid_size)
+  train_datasets, 
+  train_size, 
+  valid_size)
+
 _, _, test_dataset, test_labels = merge_datasets(test_datasets, test_size)
 
 print('Training:', train_dataset.shape, train_labels.shape)
@@ -230,8 +240,6 @@ def randomize(dataset, labels):
 train_dataset, train_labels = randomize(train_dataset, train_labels)
 test_dataset, test_labels = randomize(test_dataset, test_labels)
 valid_dataset, valid_labels = randomize(valid_dataset, valid_labels)
-
-#TODO PROBLEM 4: print shuffled data in order to convice yourself that are still good in terms of mean and variance
 
 '''
 SAVE DATA FOR LATER REUSE
@@ -256,11 +264,6 @@ except Exception as e:
 
 statinfo = os.stat(pickle_file)
 print('Compressed pickle size:', statinfo.st_size)
-
-#TODO PROBLEM 5: measure how much overlap there is between training, validation and test samples
-
-#TODO PROBLEM 6: train a simple off-the-shelf model the this data. (sklearn.linear_model with Logistic Regression)
-
 
 
 
