@@ -62,6 +62,7 @@ def my_input_fn(feature_inputs, targets, batch_size=1, shuffle=True, num_epochs=
     if shuffle:
       ds = ds.shuffle(buffer_size=10000)
 
+    
     # Return the next batch of data.
     feature_inputs, labels = ds.make_one_shot_iterator().get_next()
     return feature_inputs, labels
