@@ -481,7 +481,7 @@ num_rows = int(math.ceil(num_nodes / 10.0))
 fig, axes = plt.subplots(num_rows, 10, figsize=(20, 2 * num_rows))
 for coef, ax in zip(weights0.T, axes.ravel()):
     # Weights in coef is reshaped from 1x784 to 28x28.
-    ax.matshow(coef.reshape(28, 28), cmap=plt.cm.pink)
+    ax.matshow(coef.reshape(28, 28), cmap= plt.cm.pink)
     ax.set_xticks(())
     ax.set_yticks(())
 
