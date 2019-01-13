@@ -22,6 +22,10 @@ with open(pickle_file, 'rb') as f:
   print('Validation set', valid_dataset.shape, valid_labels.shape)
   print('Test set', test_dataset.shape, test_labels.shape)
 
+image_size = 28
+num_labels = 10
+num_channels = 1 # grayscale
+
 # Convolutions need the image data formatted as a cube (width by height by #channels)
 # Labels as float 1-hot encodings
 def reformat(dataset, labels):
@@ -67,7 +71,11 @@ with graph.as_default():
   layer4_weights = tf.Variable(tf.truncated_normal([num_hidden, num_labels], stddev=0.1))
   layer4_biases = tf.Variable(tf.constant(1.0, shape=[num_labels]))
   
-  # Model.
+  '''
+  Here two models structure are presented, one with a simple stride of two and 
+  another one with maxPooling implemented
+  '''
+  # Basic model with stride of 2.
   def model(data):
     conv = tf.nn.conv2d(data, layer1_weights, [1, 2, 2, 1], padding='SAME')
     hidden = tf.nn.relu(conv + layer1_biases)
@@ -77,9 +85,22 @@ with graph.as_default():
     reshape = tf.reshape(hidden, [shape[0], shape[1] * shape[2] * shape[3]])
     hidden = tf.nn.relu(tf.matmul(reshape, layer3_weights) + layer3_biases)
     return tf.matmul(hidden, layer4_weights) + layer4_biases
+
+  # Model with maxPooling (stride of 2 and kernel 2) substituting simple the stride of 2 
+  def modelWithMaxPooling(data):
+    conv = tf.nn.conv2d(data, layer1_weights, [1, 1, 1, 1], padding='SAME')
+    pool = tf.nn.max_pool(conv, [1, 2, 2, 1], [1, 2, 2, 1], padding='SAME')
+    hidden = tf.nn.relu(pool + layer1_biases)
+    conv = tf.nn.conv2d(hidden, layer2_weights, [1, 1, 1, 1], padding='SAME')
+    pool = tf.nn.max_pool(conv, [1, 2, 2, 1], [1, 2, 2, 1], padding='SAME')
+    hidden = tf.nn.relu(pool + layer2_biases)
+    shape = hidden.get_shape().as_list()
+    reshape = tf.reshape(hidden, [shape[0], shape[1] * shape[2] * shape[3]])
+    hidden = tf.nn.relu(tf.matmul(reshape, layer3_weights) + layer3_biases)
+    return tf.matmul(hidden, layer4_weights) + layer4_biases
   
   # Training computation.
-  logits = model(tf_train_dataset)
+  logits = model(tf_train_dataset) #DECIDE HERE WHICH MODEL TO BE USED  
   loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=tf_train_labels, logits=logits))
     
   # Optimizer.
@@ -87,9 +108,8 @@ with graph.as_default():
   
   # Predictions for the training, validation, and test data.
   train_prediction = tf.nn.softmax(logits)
-  valid_prediction = tf.nn.softmax(model(tf_valid_dataset))
-  test_prediction = tf.nn.softmax(model(tf_test_dataset))
-
+  valid_prediction = tf.nn.softmax(model(tf_valid_dataset)) #DECIDE HERE WHICH MODEL TO BE USED  
+  test_prediction = tf.nn.softmax(model(tf_test_dataset)) #DECIDE HERE WHICH MODEL TO BE USED  
 
 num_steps = 1001
 
@@ -103,7 +123,7 @@ with tf.Session(graph=graph) as session:
     feed_dict = {tf_train_dataset : batch_data, tf_train_labels : batch_labels}
     _, l, predictions = session.run(
       [optimizer, loss, train_prediction], feed_dict=feed_dict)
-    if (step % 50 == 0):
+    if (step % 100 == 0):
       print('Minibatch loss at step %d: %f' % (step, l))
       print('Minibatch accuracy: %.1f%%' % accuracy(predictions, batch_labels))
       print('Validation accuracy: %.1f%%' % accuracy(
