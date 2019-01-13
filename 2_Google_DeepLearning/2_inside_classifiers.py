@@ -13,7 +13,7 @@ import tensorflow as tf
 from six.moves import cPickle as pickle
 from six.moves import range
 
-data_root = '/mnt/c/Users/Berto/Downloads/notMNIST/' # Change to find data elsewhere
+data_root = '/mnt/c/Users/Berto/Downloads/notMNIST/' # Change to find/download data elsewhere
 pickle_file = os.path.join(data_root, 'notMNIST.pickle')
 
 with open(pickle_file, 'rb') as f:
