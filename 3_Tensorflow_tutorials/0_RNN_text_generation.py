@@ -111,10 +111,6 @@ model = build_model(
 def loss(labels, logits):
   return tf.keras.losses.sparse_categorical_crossentropy(labels, logits)
 
-example_batch_loss  = loss(target_example_batch, example_batch_predictions)
-print("Prediction shape: ", example_batch_predictions.shape, " # (batch_size, sequence_length, vocab_size)") 
-print("scalar_loss:      ", example_batch_loss.numpy().mean())
-
 model.compile(
     optimizer = tf.train.AdamOptimizer(),
     loss = loss)
@@ -129,9 +125,9 @@ checkpoint_callback=tf.keras.callbacks.ModelCheckpoint(
     save_weights_only=True)
 
 EPOCHS=3
-'''
+
 history = model.fit(dataset.repeat(), epochs=EPOCHS, steps_per_epoch=steps_per_epoch, callbacks=[checkpoint_callback])
-We want to unpack this fit method in order to obtain a most customizable training
+# We want to unpack this fit method in order to obtain a most customizable training
 '''
 optimizer = tf.train.AdamOptimizer()
 
@@ -164,7 +160,7 @@ for epoch in range(EPOCHS):
     print ('Time taken for 1 epoch {} sec\n'.format(time.time() - start))
 
 model.save_weights(checkpoint_prefix.format(epoch=epoch))
-
+'''
 session.close()
 
 
