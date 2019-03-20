@@ -1,16 +1,3 @@
-
-import tensorflow as tf
-tf.enable_eager_execution()
-
-import numpy as np
-import os
-import time
-
-config = tf.ConfigProto()
-config.gpu_options.allow_growth = True
-session = tf.Session(config=config)
-tf.keras.backend.set_session(session)
-
 '''
 Considerations about this exercise.
 While some of the generated sentences are grammatical, most do not make sense. 
@@ -25,6 +12,20 @@ The model will no learn the meaning of words, but:
   - the model is trained on small batches of text (100 characters each), 
     and is still able to generate a longer sequence of text with coherent structure.
 '''
+
+from __future__ import absolute_import, division, print_function
+
+import tensorflow as tf
+tf.enable_eager_execution()
+
+import numpy as np
+import os
+import time
+
+config = tf.ConfigProto()
+config.gpu_options.allow_growth = True
+session = tf.Session(config=config)
+tf.keras.backend.set_session(session)
 
 # Downlad, read, then decode for py2 compat.
 path_to_file = tf.keras.utils.get_file('shakespeare.txt', 'https://storage.googleapis.com/download.tensorflow.org/data/shakespeare.txt')
