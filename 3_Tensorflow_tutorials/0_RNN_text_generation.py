@@ -48,7 +48,7 @@ print ('{} ---- characters mapped to int ---- > {}'.format(repr(text[:13]), text
 # CREATE TRAINING EXAMPLES AND TARGETS
 # The maximum length sentence we want for a single input in characters
 seq_length = 100
-examples_per_epoch = int(len(text) / seq_length)
+examples_per_epoch = len(text) // seq_length
 # Create training examples / targets
 char_dataset = tf.data.Dataset.from_tensor_slices(text_as_int)
 sequences = char_dataset.batch(seq_length+1, drop_remainder=True)
@@ -63,7 +63,7 @@ dataset = sequences.map(split_input_target)
 # CREATE TRAINING BATCHES
 # Batch size 
 BATCH_SIZE = 64
-steps_per_epoch = int(examples_per_epoch / BATCH_SIZE)
+steps_per_epoch = examples_per_epoch // BATCH_SIZE
 # Buffer size to shuffle the dataset
 # (TF data is designed to work with possibly infinite sequences, 
 # so it doesn't attempt to shuffle the entire sequence in memory. Instead, 
@@ -82,11 +82,11 @@ embedding_dim = 256
 rnn_units = 1024
 
 if tf.test.is_gpu_available():
-  rnn = tf.keras.layers.CuDNNLSTM
+  rnn = tf.keras.layers.CuDNNGRU
 else:
   import functools
   rnn = functools.partial(
-    tf.keras.layers.LSTM, recurrent_activation='sigmoid')
+    tf.keras.layers.GRU, recurrent_activation='sigmoid')
 
 def build_model(vocab_size, embedding_dim, rnn_units, batch_size):
   model = tf.keras.Sequential([
@@ -106,6 +106,7 @@ model = build_model(
   rnn_units=rnn_units, 
   batch_size=BATCH_SIZE)
 
+model.summary()
 
 # TRAIN THE MODEL
 def loss(labels, logits):
@@ -161,8 +162,6 @@ for epoch in range(EPOCHS):
 
 model.save_weights(checkpoint_prefix.format(epoch=epoch))
 '''
-session.close()
-
 
 # GENERATE TEXT
 model = build_model(vocab_size, embedding_dim, rnn_units, batch_size=1)
@@ -209,6 +208,7 @@ def generate_text(model, start_string):
 
 print(generate_text(model, start_string=u"ROMEO: "))
 
+session.close()
 
 
 
