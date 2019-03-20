@@ -107,11 +107,23 @@ model = build_model(
   rnn_units=rnn_units, 
   batch_size=BATCH_SIZE)
 
+for input_example_batch, target_example_batch in dataset.take(1): 
+  example_batch_predictions = model(input_example_batch)
+  print(example_batch_predictions.shape, "# (batch_size, sequence_length, vocab_size)")
+
 model.summary()
+
+sampled_indices = tf.random.categorical(example_batch_predictions[0], num_samples=1)
+sampled_indices = tf.squeeze(sampled_indices,axis=-1).numpy()
 
 # TRAIN THE MODEL
 def loss(labels, logits):
-  return tf.keras.losses.sparse_categorical_crossentropy(labels, logits)
+  return tf.keras.losses.sparse_categorical_crossentropy(labels, logits, from_logits=True)
+
+example_batch_loss  = loss(target_example_batch, example_batch_predictions)
+print("Prediction shape: ", example_batch_predictions.shape, " # (batch_size, sequence_length, vocab_size)") 
+print("scalar_loss:      ", example_batch_loss.numpy().mean())
+
 
 model.compile(
     optimizer = tf.train.AdamOptimizer(),
@@ -129,6 +141,7 @@ checkpoint_callback=tf.keras.callbacks.ModelCheckpoint(
 EPOCHS=3
 
 history = model.fit(dataset.repeat(), epochs=EPOCHS, steps_per_epoch=steps_per_epoch, callbacks=[checkpoint_callback])
+tf.train.latest_checkpoint(checkpoint_dir)
 # We want to unpack this fit method in order to obtain a most customizable training
 '''
 optimizer = tf.train.AdamOptimizer()
