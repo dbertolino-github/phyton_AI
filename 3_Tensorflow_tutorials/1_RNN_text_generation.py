@@ -7,6 +7,11 @@ import numpy as np
 import os
 import time
 
+config = tf.ConfigProto()
+config.gpu_options.allow_growth = True
+session = tf.Session(config=config)
+tf.keras.backend.set_session(session)
+
 path_to_file = tf.keras.utils.get_file('shakespeare.txt', 'https://storage.googleapis.com/download.tensorflow.org/data/shakespeare.txt')
 
 # Read, then decode for py2 compat.
@@ -207,3 +212,5 @@ def generate_text(model, start_string):
   return (start_string + ''.join(text_generated))
 
 print(generate_text(model, start_string=u"ROMEO: "))
+
+session.close()
